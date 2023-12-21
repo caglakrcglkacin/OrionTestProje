@@ -1,0 +1,328 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model ContactDto
+@{
+    var pagingModel = ViewBag.Rehper as PagingModel;
+}
+
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div id="errorMessage" class="alert alert-info">
+        @Html.Raw(ViewBag.ErrorMessage)
+    </div>
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-info" id="successMessage">
+        @Html.Raw(ViewBag.SuccessMessage)
+    </div>
+}
+@* Ekleme Modal *@
+<div class="modal fade" id="ekleModal" tabindex="-1" role="dialog" aria-labelledby="ekleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ekleModalLabel">Yeni Veri Ekle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/Phone/Kaydet" method="post" novalidate>
+                <div class="modal-body">
+                    <div class="mb-1">
+                        <label class="form-label">İsim</label>
+                        <input class="form-control" type="text" id="FirstName" asp-for="FirstName" />
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label">Soyisim</label>
+                        <input class="form-control" type="text" id="Surname" asp-for="Surname" />
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label">Telefon</label>
+                        <input class="form-control" type="text" id="PhoneNumber" asp-for="PhoneNumber" maxlength="11" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@* Silme Modal *@
+<div class="modal fade" id="silOnayModal" tabindex="-1" role="dialog" aria-labelledby="silOnayModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="silOnayModalLabel">Silme Onayı</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Gerçekten silmek istediğinize emin misiniz?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hayır</button>
+                <button type="button" class="btn btn-danger" id="evetButton">Evet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Güncelleme Modal *@
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Güncelleme</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/Phone/Update" method="post" novalidate>
+                <div class="modal-body">
+                    <div class="mb-1">
+                        <label class="form-label">İsim</label>
+                        <input class="form-control" type="text" id="FirstName" name="FirstName" />
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label">Soyisim</label>
+                        <input class="form-control" type="text" id="Surname" name="Surname" />
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label">Telefon</label>
+                        <input class="form-control" type="text" id="PhoneNumber" name="PhoneNumber" maxlength="11" />
+                    </div>
+                    <input type="hidden" id="updateId" name="id" />
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" id="submitFormButton" class="btn btn-primary">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+ <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-bd lobidrag">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                    <h4>Rehper Bilgileri</h4>
+                    </div>
+                </div>
+                   @*  Listeleme *@                 
+                 <div class="panel-body">
+                    <div class="table-responsive">
+                        <table id="dataTableExample1" class="table table-bordered table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td></td>
+                                    <th>Adı</th>
+                                    <th>Soyadı</th>
+                                    <th>Telefon</th>
+                                </tr>
+                            </thead>
+                        @foreach (var item in pagingModel.Items)
+                            {
+                                <tbody>
+                                    <tr>
+                                    <td>
+                                        <input type="checkbox" class="from-select my-checkbox" value="@item.Id">
+                                     </td>
+                                      <td>@item.FirstName</td>
+                                      <td>@item.Surname</td>
+                                      <td>@item.PhoneNumber</td>
+                                      
+                                    </tr>
+                                </tbody>
+                            }
+                        </table>
+                    </div>
+                <div>
+                    Sayfalar:
+               
+                    @for (int i = 1; i <= pagingModel.TotalPages; i++)
+                    {
+                        <a href="@Url.RouteUrl(new { action = "Liste", page = i, pageSize = pagingModel.PageSize })">@i</a>
+                    }
+                </div>
+ 
+                  </div>
+            </div>
+        </div>
+       @*  Butonlar *@
+        <div class="col-md-6">
+            <div class="panel panel-bd lobidrag">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        <h4>Ekle/Sil/Güncelle</h4>
+                    </div>
+                </div>
+                <div class="panel-body">
+                <div class="table-responsive">
+                    <div class="navbar">
+                        <button data-toggle="modal" data-target="#ekleModal" class="btn  btn-light my-2 my-sm-0" type="submit"><i class="bi bi-person-plus-fill"></i>Ekle</button>
+                       
+                        <form id="deleteForm" action="/Phone/Delete" method="post" novalidate>
+                            <input type="hidden" id="RotaId" name="id" value="">
+                            <input type="hidden" id="deleteId" name="id" value="" />
+                            <button class="btn btn-light my-2 my-sm-0" type="button" data-toggle="modal" data-target="#silOnayModal">
+                                <i class="bi bi-person-x-fill"></i> Sil
+                            </button>
+                        </form>
+                        <button id="updateButton" class="btn  btn-light my-2 my-sm-0" type="button" data-toggle="modal" data-target="#updateModal">
+                            <i class="bi bi-pencil-square"></i>Güncelle
+                        </button>
+                        <form class="form-inline my-2 my-lg-0" style="display:flex">
+                            <input id="searchInput" class="form-control mr-sm-2" type="search" placeholder="Ad Soyad Ara" aria-label="Search">
+                  
+                            <button id="searchButton" class="btn  btn-light my-2 my-sm-0" type="button">Ara</button>
+                        </form>
+                    </div>
+                </div>
+               </div>
+           </div>
+        </div>
+    </div>
+@section Scripts {
+<script>
+    $(document).ready(function () {
+
+        $('#dataTableExample1').DataTable();
+    });
+    $(document).ready(function () {
+        $(document).on('change', '.my-checkbox', function () {
+            if ($(this).is(':checked')) {
+                var selectedId = $(this).val();
+                $('#RotaId').val(selectedId);
+                console.log(selectedId);
+
+                // Silme formu için gizli input'un değerini güncelle
+                $('#deleteId').val(selectedId);
+            }
+        });
+
+        $("#evetButton").click(function () {
+            // Silme işlemini gerçekleştirmek için POST isteği yap
+            $.post("/Phone/Delete",
+                {
+                    id: $('#deleteId').val()
+                },
+                function (response) {
+                    if (response.status == true) {
+                        window.location.href = "/Phone/Liste";
+
+
+                    }
+                }
+            );
+            $('#silOnayModal').modal('hide');
+        });
+    });
+
+
+    document.getElementById("searchButton").addEventListener("click", function () {
+        searchTable();
+    });
+
+  
+        function searchTable() {
+            var input = document.getElementById("searchInput");
+            var filter = input.value.toUpperCase();
+
+            var table = document.getElementById("dataTableExample1");
+            var rows = table.getElementsByTagName("tr");
+
+            for (var i = 0; i < rows.length; i++) {
+                var cells = rows[i].getElementsByTagName("td");
+                var isVisible = false;
+                
+                for (var j = 0; j < cells.length; j++) {
+                    var cellValue = cells[j].textContent || cells[j].innerText ;
+                    var cellPhone = cells[j].textContent || cells[j].innerText;
+                    if (cellValue.toUpperCase().indexOf(filter) > -1 || cellPhone.toUpperCase().indexOf(filter) > -1) {
+                        isVisible = true;
+                        break;
+                    }
+                }
+
+                rows[i].style.display = isVisible ? "" : "none";
+            }
+        }
+
+
+
+    var inputElement = document.getElementById("searchInput");
+    inputElement.addEventListener("input", searchTable);
+
+    $(document).ready(function () {
+        var selectedId;
+
+
+        $('.my-checkbox').click(function () {
+            selectedId = $(this).val();
+        });
+
+        $('#closeButton').click(function () {
+            shouldPreventModalClose = true;
+            $('#updateModal').modal('hide');
+        });
+
+        $('#updateButton').click(function () {
+            if (selectedId) {
+
+                $.ajax({
+                    url: '/Phone/GetData',
+                    type: 'GET',
+                    data: { id: selectedId },
+                    success: function (data) {
+                        console.log(data);
+
+                        $('#updateModal #FirstName').val(data.firstName);
+                        $('#updateModal #Surname').val(data.surname);
+                        $('#updateModal #PhoneNumber').val(data.phoneNumber);
+                        $('#updateModal #updateId').val(selectedId);
+                        $('#updateModal').modal('show');
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            } else {
+
+            }
+        });
+
+
+        $('#submitFormButton').click(function () {
+
+            $('#updateForm').submit();
+
+
+            $('#updateModal').modal('hide');
+        });
+
+        setTimeout(function () {
+            var successMessage = document.getElementById('successMessage');
+            var errorMessage = document.getElementById('errorMessage');
+
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+
+            if (errorMessage) {
+                errorMessage.style.display = 'none';
+            }
+        }, 5000);
+    });
+</script>
+   }
+  
+         

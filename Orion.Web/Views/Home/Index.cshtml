@@ -1,0 +1,66 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutGiris.cshtml";
+}
+@model LoginViewModel
+
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @Html.Raw(ViewBag.ErrorMessage)
+    </div>
+}
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-info" id="successMessage">
+        @Html.Raw(ViewBag.SuccessMessage)
+    </div>
+}
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading">
+        <i class="fas fa-spinner"></i>
+    </div>
+</div>
+
+<div class="container" >
+    <div class="row">
+        <div class="col-xl-6 offset-xl-3">
+            <div class="text-box mt-5 mb-5">
+                <form action="/Home/Index" method="post" novalidate>
+                    <div class="form-group">
+                        <label class="control-label" for="username">Kullanıcı Adı</label>
+                        <input type="text" placeholder="example@gmail.com" title="Lütfen Email Adresinizi Giriniz" asp-for="KullaniciAdı" class="form-control">
+                     
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="password">Şifre</label>
+                        <input type="password" title="Lütfen Şifrenizi Giriniz" placeholder="******" required="" asp-for="Password" class="form-control">
+                    
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" asp-for="RembemberMe" class="mdl-button mdl-js-button mdl-js-ripple-effect button button-primary">
+                        <label class="control-label">Beni Hatırla <em> *</em></label>
+                    </div>
+                    <div>
+                        <button class="btn btn-light" id="loginButton">Giriş</button>
+                      
+                    </div>                   
+                </form>
+                <div>
+                    <p class="mb-4">Kayıtlı Değilmisiniz? <a class="blue" href="/Home/Save">Kayıt Ol</a></p>
+                </div>
+                </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        });
+        document.getElementById('loginButton').addEventListener('click', function () {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        });
+    </script>
+}

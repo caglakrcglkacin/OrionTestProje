@@ -1,0 +1,134 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutGiris.cshtml";
+}
+@model UserDto
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @Html.Raw(ViewBag.ErrorMessage)
+    </div>
+}
+<div class="container" style="color:white;">
+    <div class="row">
+        <div class="col-xl-6 offset-xl-3">
+            <div class="text-box mt-5 mb-5">
+                <p class="mb-4"><a class="blue" href="/Home/Index">Log In</a></p>
+                <form id="signupForm" action="/Home/Save" method="post">
+                    <div class="mb-4 form-group">
+                        <label class="control-label">Kullanıcı Adı</label>
+                        <input type="text" value="" id="UserName" name="UserName" asp-for="UserName" class="form-control">
+                       
+                    </div>
+                    <div class="mb-4 form-group">
+                        <label class="control-label" for="Email">Email</label>
+                        <input type="text" value="" id="Email" name="Email" asp-for="Email" class="form-control">
+                    
+                    </div>
+                    <div class="mb-4 form-group">
+                        <label class="control-label" for="Password">Şifre</label>
+                        <input type="password" class="form-control" id="Password" asp-for="Password" name="Password" placeholder="Password">
+                     
+                    </div>
+                    <div class="mb-4 form-group">
+                        <label class="control-label" for="AginPassword">Şifre Tekrarı</label>
+                        <input type="password" class="form-control" id="AginPassword" asp-for="AginPassword" name="AginPassword" placeholder="">
+                       
+                    </div>
+                    <div class="mb-4 form-group">
+                        <label class="control-label" for="FullName">İsim Soyisim</label>
+                        <input type="text" value="" id="FullName" name="FullName" asp-for="FullName" class="form-control">
+                     
+                    </div>
+
+                    <button type="submit" class="form-control-submit-button">Kaydet</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var signupForm = document.getElementById("signupForm");
+
+            signupForm.addEventListener("submit", function (event) {
+                var emailInput = document.getElementById("Email");
+                var passwordInput = document.getElementById("Password");
+                var aginPasswordInput = document.getElementById("AginPassword");
+
+
+                if (!isValidEmail(emailInput.value)) {
+                    alert("E-posta adresi geçerli değil!");
+                    event.preventDefault(); // Formun gönderimini engelle
+                    return;
+                }
+                // Eğer şifre belirli kriterlere uymuyorsa
+                if (!validatePassword(passwordInput.value)) {
+                    alert("Şifre belirli kriterlere uymalıdır!");
+                    event.preventDefault();
+                    return;
+                }
+
+
+                if (passwordInput.value !== aginPasswordInput.value) {
+                    alert("Şifreler uyuşmuyor!");
+                    event.preventDefault();
+                    return;
+                }
+            });
+
+
+            function validatePassword(password) {
+
+                var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$!%*?&])[A-Za-z\d$!%*?&]{8,}$/;
+                return regex.test(password);
+            }
+        });
+        $(document).ready(function () {
+
+            $("#signupForm").validate({
+                rules: {
+                    UserName: {
+                        required: true
+                    },
+                    Email: {
+                        required: true,
+                        email: true
+                    },
+                    Password: {
+                        required: true,
+                        minlength: 6
+                    },
+                    AginPassword: {
+                        required: true,
+                        equalTo: "#Password"
+                    },
+                    FullName: {
+                        required: true
+                    }
+                },
+                messages: {
+                    UserName: "Lütfen İsminizi Giriniz",
+                    Email: {
+                        required: "Lütfen Mail Adresinizi Giriniz,"
+                       email: "Lütfen geçerli bir e-posta adresi girin"
+                    },
+                    Password: {
+                        required: "lütfen Patola Giriniz",
+                        minlength: "Şifre en az 6 karakterden oluşmalıdır.Bir büyük harf ve noktalama işareti ile oluşturulmalıdır."
+                    },
+                    AginPassword: {
+                        required: "Lütfen Parolanızı Tekrarlanyın",
+                        equalTo: "Parolanız Uyuşmadı"
+                    },
+                    FullName: "Lütfen İsminizi Giriniz"
+                },
+                submitHandler: function (form) {
+
+                    form.submit();
+                }
+            });
+        });
+    </script>
+}
